@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
-import { getMeetings } from '@/lib/meetings-db';
+import { getAllMeetings } from '@/lib/meetings-db';
 
 export default async function CurrentMeetingPage() {
   await connection();
@@ -16,8 +16,8 @@ export default async function CurrentMeetingPage() {
   const day = String(sunday.getDate()).padStart(2, '0');
   const currentSundayIso = `${year}-${month}-${day}`;
 
-  // Query in-memory data for this Sunday's date
-  const matches = getMeetings(currentSundayIso);
+  // Query database for this Sunday's date
+  const matches = await getAllMeetings(currentSundayIso);
 
   if (matches.length > 0) {
     redirect(`/meetings/${matches[0].id}`);
@@ -31,13 +31,13 @@ export default async function CurrentMeetingPage() {
   const nextDay = String(nextSunday.getDate()).padStart(2, '0');
   const nextSundayIso = `${nextYear}-${nextMonth}-${nextDay}`;
 
-  const nextMatches = getMeetings(nextSundayIso);
+  const nextMatches = await getAllMeetings(nextSundayIso);
   if (nextMatches.length > 0) {
     redirect(`/meetings/${nextMatches[0].id}`);
   }
 
   // Fallback: redirect to the first available meeting or /meetings
-  const allMeetings = getMeetings();
+  const allMeetings = await getAllMeetings();
   if (allMeetings.length > 0) {
     redirect(`/meetings/${allMeetings[0].id}`);
   }

@@ -3,24 +3,14 @@ import { notFound } from 'next/navigation';
 import MeetingDetail from '@/components/MeetingDetail';
 import type { SacramentMeeting } from '@/lib/types';
 import { getMeetingById } from '@/lib/meetings-db';
+import { Suspense } from 'react';
 
 interface MeetingDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
 async function fetchMeeting(idNum: number): Promise<SacramentMeeting | null> {
-  try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-    const res = await fetch(`${baseUrl}/api/meetings/${idNum}`, { cache: 'no-store' });
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch {
-    // Fallback during static generation
-  }
-  return getMeetingById(idNum);
+  return await getMeetingById(idNum);
 }
 
 export async function generateMetadata({
@@ -44,7 +34,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function MeetingDetailPage({ params }: MeetingDetailPageProps) {
+async function MeetingDetailContent({ params }: MeetingDetailPageProps) {
   const { id: rawId } = await params;
   const idNum = Number(rawId);
 
@@ -61,3 +51,10 @@ export default async function MeetingDetailPage({ params }: MeetingDetailPagePro
   return <MeetingDetail meeting={meeting} />;
 }
 
+export default function MeetingDetailPage(props: MeetingDetailPageProps) {
+  return (
+    <Suspense fallback={<div className="p-8 text-slate-400">Loading meeting agenda...</div>}>
+      <MeetingDetailContent {...props} />
+    </Suspense>
+  );
+}

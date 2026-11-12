@@ -12,6 +12,7 @@ const navItems: NavItem[] = [
   { name: 'Home', href: '/' },
   { name: 'All Meetings', href: '/meetings' },
   { name: 'This Sunday', href: '/meetings/current' },
+  { name: 'Admin', href: '/meetings/new' },
 ];
 
 export default function NavLinks() {
