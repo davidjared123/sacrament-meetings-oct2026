@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" width="600" height="360" fill="none">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="60%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#93c5fd"/>
+    </linearGradient>
+    <linearGradient id="buildingGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Background -->
+  <rect width="600" height="360" rx="16" fill="url(#skyGrad)" opacity="0.95"/>
+
+  <!-- Stars / Sun Glow -->
+  <circle cx="480" cy="80" r="40" fill="#fef08a" opacity="0.3"/>
+  <circle cx="480" cy="80" r="24" fill="#fef9c3" opacity="0.6"/>
+
+  <!-- Grass / Ground -->
+  <path d="M0 290 Q 300 280 600 290 L 600 360 L 0 360 Z" fill="#15803d"/>
+  <path d="M0 310 Q 250 300 600 310 L 600 360 L 0 360 Z" fill="#166534"/>
+
+  <!-- Chapel Main Body -->
+  <rect x="180" y="160" width="240" height="140" fill="url(#buildingGrad)" stroke="#94a3b8" stroke-width="2"/>
+
+  <!-- Chapel Wings -->
+  <rect x="120" y="200" width="60" height="100" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="120,200 150,180 180,200" fill="url(#roofGrad)"/>
+
+  <rect x="420" y="200" width="60" height="100" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="420,200 450,180 480,200" fill="url(#roofGrad)"/>
+
+  <!-- Main Roof -->
+  <polygon points="170,160 300,90 430,160" fill="url(#roofGrad)"/>
+
+  <!-- Steeple Base -->
+  <rect x="280" y="80" width="40" height="50" fill="url(#buildingGrad)" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Steeple Spire -->
+  <polygon points="280,80 300,10 320,80" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <!-- Gold Angel/Finial -->
+  <circle cx="300" cy="10" r="4" fill="#eab308"/>
+
+  <!-- Large Stained Glass Arch Window -->
+  <path d="M 270 210 A 30 30 0 0 1 330 210 L 330 240 L 270 240 Z" fill="#60a5fa" stroke="#3b82f6" stroke-width="2" opacity="0.85"/>
+  <line x1="300" y1="180" x2="300" y2="240" stroke="#1e3a8a" stroke-width="2"/>
+  <line x1="270" y1="210" x2="330" y2="210" stroke="#1e3a8a" stroke-width="2"/>
+
+  <!-- Chapel Entrance Doors -->
+  <rect x="280" y="250" width="40" height="50" rx="3" fill="#78350f" stroke="#451a03" stroke-width="1.5"/>
+  <line x1="300" y1="250" x2="300" y2="300" stroke="#451a03" stroke-width="1.5"/>
+
+  <!-- Entry Steps -->
+  <rect x="260" y="300" width="80" height="6" rx="2" fill="#94a3b8"/>
+  <rect x="250" y="306" width="100" height="6" rx="2" fill="#64748b"/>
+
+  <!-- Side Windows -->
+  <rect x="135" y="220" width="16" height="30" rx="8" fill="#93c5fd" opacity="0.8"/>
+  <rect x="155" y="220" width="16" height="30" rx="8" fill="#93c5fd" opacity="0.8"/>
+  <rect x="430" y="220" width="16" height="30" rx="8" fill="#93c5fd" opacity="0.8"/>
+  <rect x="450" y="220" width="16" height="30" rx="8" fill="#93c5fd" opacity="0.8"/>
+
+  <!-- Trees -->
+  <circle cx="90" cy="280" r="30" fill="#15803d"/>
+  <circle cx="80" cy="270" r="22" fill="#22c55e"/>
+  <rect x="86" y="295" width="8" height="25" fill="#78350f"/>
+
+  <circle cx="510" cy="280" r="30" fill="#15803d"/>
+  <circle cx="520" cy="270" r="22" fill="#22c55e"/>
+  <rect x="506" y="295" width="8" height="25" fill="#78350f"/>
+</svg>
+
