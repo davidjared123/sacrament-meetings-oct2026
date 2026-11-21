@@ -3,7 +3,7 @@ import type { SacramentMeeting } from './types';
 
 const ITEMS_PER_PAGE = 5;
 
-const fallbackMeetings: SacramentMeeting[] = [
+let fallbackMeetings: SacramentMeeting[] = [
   {
     id: 1,
     date: '2026-11-01',
@@ -373,20 +373,135 @@ export async function getAllMeetings(date?: string | null): Promise<SacramentMee
   return fallbackMeetings;
 }
 
-// Mutation stubs — will be wired to the database in Week 04
+// Live Database Mutations with Fallback
 export async function addMeeting(
   data: Omit<SacramentMeeting, 'id'>
 ): Promise<SacramentMeeting> {
-  throw new Error('addMeeting: database implementation coming in Week 04');
+  if (process.env.DATABASE_URL) {
+    try {
+      const sql = neon(process.env.DATABASE_URL);
+      const rows = await sql`
+        INSERT INTO meetings (
+          date, meeting_type, presiding, conducting, announcements,
+          opening_hymn, opening_prayer, ward_business, stake_business,
+          sacrament_hymn, speakers, closing_hymn, closing_prayer
+        ) VALUES (
+          ${data.date}::date,
+          ${data.meetingType},
+          ${data.presiding},
+          ${data.conducting},
+          ${data.announcements ?? []}::text[],
+          ${JSON.stringify(data.openingHymn)}::jsonb,
+          ${data.openingPrayer},
+          ${JSON.stringify(data.wardBusiness ?? [])}::jsonb,
+          ${data.stakeBusiness ?? false},
+          ${JSON.stringify(data.sacramentHymn)}::jsonb,
+          ${JSON.stringify(data.speakers ?? [])}::jsonb,
+          ${JSON.stringify(data.closingHymn)}::jsonb,
+          ${data.closingPrayer}
+        )
+        RETURNING
+          id,
+          to_char(date, 'YYYY-MM-DD') AS "date",
+          meeting_type                AS "meetingType",
+          presiding, conducting, announcements,
+          opening_hymn                AS "openingHymn",
+          opening_prayer              AS "openingPrayer",
+          ward_business               AS "wardBusiness",
+          stake_business              AS "stakeBusiness",
+          sacrament_hymn              AS "sacramentHymn",
+          speakers,
+          closing_hymn                AS "closingHymn",
+          closing_prayer              AS "closingPrayer"
+      `;
+      return rows[0] as unknown as SacramentMeeting;
+    } catch (err) {
+      console.warn('PostgreSQL addMeeting failed, using fallback:', err);
+    }
+  }
+
+  const nextId =
+    fallbackMeetings.length > 0
+      ? Math.max(...fallbackMeetings.map((m) => m.id)) + 1
+      : 1;
+  const newMeeting: SacramentMeeting = {
+    id: nextId,
+    ...data,
+  };
+  fallbackMeetings.unshift(newMeeting);
+  return newMeeting;
 }
 
 export async function updateMeeting(
   id: number,
   updates: Partial<SacramentMeeting>
 ): Promise<SacramentMeeting | null> {
-  throw new Error('updateMeeting: database implementation coming in Week 04');
+  if (process.env.DATABASE_URL) {
+    try {
+      const existing = await getMeetingById(id);
+      if (!existing) return null;
+
+      const merged = { ...existing, ...updates };
+      const sql = neon(process.env.DATABASE_URL);
+      const rows = await sql`
+        UPDATE meetings
+        SET
+          date           = ${merged.date}::date,
+          meeting_type   = ${merged.meetingType},
+          presiding      = ${merged.presiding},
+          conducting     = ${merged.conducting},
+          announcements  = ${merged.announcements ?? []}::text[],
+          opening_hymn   = ${JSON.stringify(merged.openingHymn)}::jsonb,
+          opening_prayer = ${merged.openingPrayer},
+          ward_business  = ${JSON.stringify(merged.wardBusiness ?? [])}::jsonb,
+          stake_business = ${merged.stakeBusiness ?? false},
+          sacrament_hymn = ${JSON.stringify(merged.sacramentHymn)}::jsonb,
+          speakers       = ${JSON.stringify(merged.speakers ?? [])}::jsonb,
+          closing_hymn   = ${JSON.stringify(merged.closingHymn)}::jsonb,
+          closing_prayer = ${merged.closingPrayer}
+        WHERE id = ${id}
+        RETURNING
+          id,
+          to_char(date, 'YYYY-MM-DD') AS "date",
+          meeting_type                AS "meetingType",
+          presiding, conducting, announcements,
+          opening_hymn                AS "openingHymn",
+          opening_prayer              AS "openingPrayer",
+          ward_business               AS "wardBusiness",
+          stake_business              AS "stakeBusiness",
+          sacrament_hymn              AS "sacramentHymn",
+          speakers,
+          closing_hymn                AS "closingHymn",
+          closing_prayer              AS "closingPrayer"
+      `;
+      return (rows[0] as unknown as SacramentMeeting) ?? null;
+    } catch (err) {
+      console.warn('PostgreSQL updateMeeting failed, using fallback:', err);
+    }
+  }
+
+  const index = fallbackMeetings.findIndex((m) => m.id === id);
+  if (index === -1) return null;
+
+  fallbackMeetings[index] = {
+    ...fallbackMeetings[index],
+    ...updates,
+  };
+  return fallbackMeetings[index];
 }
 
 export async function deleteMeeting(id: number): Promise<boolean> {
-  throw new Error('deleteMeeting: database implementation coming in Week 04');
+  if (process.env.DATABASE_URL) {
+    try {
+      const sql = neon(process.env.DATABASE_URL);
+      await sql`DELETE FROM meetings WHERE id = ${id}`;
+      return true;
+    } catch (err) {
+      console.warn('PostgreSQL deleteMeeting failed, using fallback:', err);
+    }
+  }
+
+  const initialLen = fallbackMeetings.length;
+  fallbackMeetings = fallbackMeetings.filter((m) => m.id !== id);
+  return fallbackMeetings.length < initialLen;
 }

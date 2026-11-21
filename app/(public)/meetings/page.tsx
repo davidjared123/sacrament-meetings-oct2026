@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { getMeetings, getMeetingsTotalPages } from '@/lib/meetings-db';
 import { MeetingSearch } from '@/components/MeetingSearch';
 import MeetingCard from '@/components/MeetingCard';
@@ -50,11 +51,21 @@ export default function MeetingsPage(props: {
 }) {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-slate-100">Sacrament Meeting Agendas</h1>
-        <p className="text-sm text-slate-400">
-          Filter agendas by speaker, leader, or meeting type with instant pagination.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100">Sacrament Meeting Agendas</h1>
+          <p className="text-sm text-slate-400">
+            Filter agendas by speaker, leader, or meeting type with instant pagination.
+          </p>
+        </div>
+        <div>
+          <Link
+            href="/meetings/new"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-colors shadow-md"
+          >
+            + Plan Meeting
+          </Link>
+        </div>
       </div>
 
       <MeetingSearch />

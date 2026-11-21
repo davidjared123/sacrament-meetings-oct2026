@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { SacramentMeeting, MeetingType } from '@/lib/types';
+import { deleteMeeting } from '@/lib/actions';
 
 interface MeetingCardProps {
   meeting: SacramentMeeting;
@@ -36,6 +37,7 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
   }).format(dateObj);
 
   const badgeInfo = meetingTypeLabels[meeting.meetingType] || meetingTypeLabels.regular;
+  const deleteMeetingWithId = deleteMeeting.bind(null, String(meeting.id));
 
   return (
     <article className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-blue-400 dark:hover:border-blue-600 transition-all flex flex-col justify-between">
@@ -85,9 +87,25 @@ export default function MeetingCard({ meeting }: MeetingCardProps) {
         >
           View Program &rarr;
         </Link>
-        <span className="text-xs text-slate-400">ID #{meeting.id}</span>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/meetings/${meeting.id}/edit`}
+            className="text-xs font-medium text-slate-400 hover:text-blue-400 transition-colors"
+            aria-label={`Edit meeting ${meeting.date}`}
+          >
+            Edit
+          </Link>
+          <form action={deleteMeetingWithId}>
+            <button
+              type="submit"
+              className="text-xs font-medium text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+              aria-label={`Delete meeting ${meeting.date}`}
+            >
+              Delete
+            </button>
+          </form>
+        </div>
       </div>
     </article>
   );
 }
-
