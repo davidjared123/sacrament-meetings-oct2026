@@ -1,29 +1,16 @@
-'use client';
-
-import { useSyncExternalStore, Suspense } from 'react';
 import Link from 'next/link';
 import NavLinks from './NavLinks';
+import SignOutButton from './SignOutButton';
+import HeaderDate from './HeaderDate';
+import { auth } from '@/auth';
+import { Suspense } from 'react';
 
-function subscribe() {
-  return () => {};
-}
-
-function getSnapshot() {
-  return new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date());
-}
-
-function getServerSnapshot() {
-  return 'Sunday Service';
+async function NavLinksSession() {
+  const session = await auth();
+  return <NavLinks user={session?.user} signOutAction={<SignOutButton />} />;
 }
 
 export default function Header() {
-  const currentDate = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
   return (
     <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur sticky top-0 z-50 print:hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -34,9 +21,7 @@ export default function Header() {
           >
             Rexburg 1st Ward
           </Link>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            The Church of Jesus Christ of Latter-day Saints • {currentDate}
-          </p>
+          <HeaderDate />
         </div>
 
         <Suspense
@@ -48,7 +33,7 @@ export default function Header() {
             </nav>
           }
         >
-          <NavLinks />
+          <NavLinksSession />
         </Suspense>
       </div>
     </header>

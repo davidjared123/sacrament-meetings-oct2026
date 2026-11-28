@@ -3,12 +3,47 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { auth, signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 import {
   addMeeting,
   updateMeeting as updateMeetingInDb,
   deleteMeeting as deleteMeetingFromDb,
 } from './meetings-db';
 import type { MeetingType, SpeakerItem } from './types';
+
+// Authenticate Server Action for login form
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirectTo: '/meetings',
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid leader email or password. Please verify credentials.';
+        default:
+          return 'Something went wrong during sign in. Please try again.';
+      }
+    }
+    throw error; // Re-throw redirect exceptions so Next.js handles them
+  }
+}
+
+// Server-side session verification guard
+async function requireLeaderSession() {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('Unauthorized: You must be signed in as a leader to mutate agendas.');
+  }
+  return session;
+}
 
 const MeetingFormSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format.'),
@@ -78,6 +113,9 @@ export async function createMeeting(
   prevState: MeetingState,
   formData: FormData
 ): Promise<MeetingState> {
+  // Ensure bishopric / clerk session before mutating data
+  await requireLeaderSession();
+
   const validatedFields = MeetingFormSchema.safeParse({
     date: formData.get('date'),
     meetingType: formData.get('meetingType'),
@@ -136,6 +174,9 @@ export async function updateMeeting(
   prevState: MeetingState,
   formData: FormData
 ): Promise<MeetingState> {
+  // Ensure bishopric / clerk session before mutating data
+  await requireLeaderSession();
+
   const validatedFields = MeetingFormSchema.safeParse({
     date: formData.get('date'),
     meetingType: formData.get('meetingType'),
@@ -195,6 +236,9 @@ export async function updateMeeting(
 }
 
 export async function deleteMeeting(id: string) {
+  // Ensure bishopric / clerk session before deleting
+  await requireLeaderSession();
+
   try {
     const numericId = Number(id);
     await deleteMeetingFromDb(numericId);

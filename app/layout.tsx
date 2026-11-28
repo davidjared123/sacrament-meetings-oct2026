@@ -18,9 +18,28 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: 'Sacrament Meeting Planner — Rexburg 1st Ward',
+  metadataBase: new URL('https://sacrament-meetings-oct2026.vercel.app'),
+  title: {
+    default: 'Rexburg 1st Ward | Sacrament Meeting Planner',
+    template: '%s | Sacrament Meeting Planner',
+  },
   description:
-    'Plan, review, and print Sunday sacrament meeting agendas and announcements for the Rexburg 1st Ward.',
+    'Plan, review, and print Sunday sacrament meeting agendas and announcements for the Rexburg 1st Ward of The Church of Jesus Christ of Latter-day Saints.',
+  openGraph: {
+    title: 'Rexburg 1st Ward | Sacrament Meeting Planner',
+    description:
+      'Digital agendas, hymns, speakers, and announcements for Sunday sacrament meetings.',
+    url: 'https://sacrament-meetings-oct2026.vercel.app',
+    siteName: 'Sacrament Meeting Planner',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rexburg 1st Ward | Sacrament Meeting Planner',
+    description:
+      'Digital agendas, hymns, speakers, and announcements for Sunday sacrament meetings.',
+  },
 };
 
 export default function RootLayout({

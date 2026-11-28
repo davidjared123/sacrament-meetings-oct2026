@@ -7,8 +7,8 @@ import { Pagination } from '@/components/Pagination';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'All Meetings — Sacrament Meeting Planner',
-  description: 'Browse current and past sacrament meeting programs.',
+  title: 'All Meetings',
+  description: 'Browse scheduled sacrament meetings, programs, and agendas for the Rexburg 1st Ward.',
 };
 
 async function MeetingsList({
